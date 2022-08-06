@@ -97,13 +97,17 @@ public class RichText : MonoBehaviour
         WaitForSeconds delay = new WaitForSeconds(delayBettweenLetter);
         TMP_TextInfo textInfo = textMeshPro.textInfo;
         int curIndex = 0;
+
         
+
         while (curIndex < textInfo.characterCount)
         {
+
             if (textInfo.characterInfo[curIndex].isVisible)
             {
                 ShowCharacter(curIndex);
-                GetComponent<AudioSource>().PlayOneShot(clip);
+                GetComponent<AudioSource>().Play();
+                yield return delay;
             }
             curIndex++;
         }
@@ -142,7 +146,8 @@ public class RichText : MonoBehaviour
     {
         while (true)
         {
-            for (int ch = 0; ch < txtData.characterCount; ch++)
+            //for (int ch = 0; ch < txtData.characterCount; ch++)
+            foreach(int ch in this._waveList)
             {
                 var charInfo = txtData.characterInfo[ch];
 
@@ -178,7 +183,8 @@ public class RichText : MonoBehaviour
         {
 
             WaitForSeconds shakeDelay = new WaitForSeconds(shakeTime);
-            for (int ch = 0; ch < txtData.characterCount; ch++)
+            //for (int ch = 0; ch < txtData.characterCount; ch++)
+            foreach (int ch in this._shakeList)
             {
                 Vector3 a = new Vector3(UnityEngine.Random.Range(-0.25f, 0.25f), UnityEngine.Random.Range(-0.25f, 0.25f), 0f);
                 int materialReferenceIndex = txtData.characterInfo[ch].materialReferenceIndex;
