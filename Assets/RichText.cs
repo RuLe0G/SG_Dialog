@@ -7,13 +7,12 @@ using System;
 
 public class RichText : MonoBehaviour
 {
-    public TMP_Text mainText;
+    [SerializeField]
+    private TMP_Text mainText;
     public TMP_Text inputText;
 
-    public string sentence;
-
     [SerializeField]
-    private float delayBettweenLetter = 0.1f;
+    private float delayBettweenLetter = 0.05f;
 
     public TextData _txtData;
 
@@ -22,18 +21,28 @@ public class RichText : MonoBehaviour
     private readonly List<int> _errorList = new List<int>();
     private readonly List<int> _flickerList = new List<int>();
 
-    [SerializeField]
-    private TMP_Text textMeshPro;
+
 
     [SerializeField]
     private AudioClip clip;
 
     private TMP_MeshInfo[] _currentMeshInfo;
 
+    [Header("Shake stng")]
     [SerializeField]
-    private float shakeTime = 0.1f;
+    [Range(0f, 1f)]
+    private float shakeTime = 0.3f;
     [SerializeField]
+    [Range(0f, 30f)]
     private float shakeScale = 10f;
+
+    [Header("Wave stng")]
+    [SerializeField]
+    [Range(0f, 1f)]
+    private float amplWave = 0.2f;
+    [SerializeField]
+    [Range(1f, 10f)]
+    private float periodWave = 5;
     public void AddTextToMain()
     {
         TextData td = new TextData()
@@ -56,10 +65,10 @@ public class RichText : MonoBehaviour
     }
     private void ON_TEXT_CHANGED(UnityEngine.Object obj)
     {
-        if (obj == this.textMeshPro)
+        if (obj == this.mainText)
         {
-            this._currentMeshInfo = this.textMeshPro.textInfo.CopyMeshInfoVertexData();
-            this.textMeshPro.UpdateVertexData();
+            this._currentMeshInfo = this.mainText.textInfo.CopyMeshInfoVertexData();
+            this.mainText.UpdateVertexData();
         }
     }
     public void ClearMainText()
@@ -72,19 +81,29 @@ public class RichText : MonoBehaviour
         _flickerList.Clear();
     }
 
-    IEnumerator TypeAnimate(string text)
-    {
-        foreach (char letter in text.ToCharArray())
-        {
-            mainText.text += letter;
-            yield return new WaitForSeconds(delayBettweenLetter);
-        }
-    }
     public void SetText(TextData txtData)
     {
         this._txtData = txtData;
-        this.textMeshPro.text = this._txtData.text;
-        this.textMeshPro.ForceMeshUpdate();
+        this.mainText.text = this._txtData.text;                
+        this.mainText.ForceMeshUpdate();
+        SetTextColor();
+    }
+
+    private void SetTextColor()
+    {
+        TMP_TextInfo textInfo = mainText.textInfo;
+        foreach (var i in textInfo.characterInfo)
+        {
+            int materialIndex = textInfo.characterInfo[i.index].materialReferenceIndex;
+            Color32[] hiddenVertexColors = textInfo.meshInfo[materialIndex].colors32;
+            int vertexIndex = textInfo.characterInfo[i.index].vertexIndex;
+            byte alpha = 0;
+            for (int j = 0; j < 4; j++)
+            {
+                hiddenVertexColors[vertexIndex + j].a = alpha;
+            }            
+        }
+        mainText.UpdateVertexData(TMP_VertexDataUpdateFlags.Colors32);
     }
 
     public void ShowText()
@@ -94,43 +113,39 @@ public class RichText : MonoBehaviour
 
     private IEnumerator ShowTextRoutine()
     {
+
         WaitForSeconds delay = new WaitForSeconds(delayBettweenLetter);
-        TMP_TextInfo textInfo = textMeshPro.textInfo;
+        TMP_TextInfo textInfo = mainText.textInfo;
         int curIndex = 0;
-
-        
-
+        StartCoroutine(Shake(textInfo));
+        StartCoroutine(Wave(textInfo));
         while (curIndex < textInfo.characterCount)
-        {
-
+        {            
             if (textInfo.characterInfo[curIndex].isVisible)
             {
                 ShowCharacter(curIndex);
+                
                 GetComponent<AudioSource>().Play();
                 yield return delay;
             }
             curIndex++;
         }
-        StartCoroutine(Shake(textInfo));
-        StartCoroutine(Wave(textInfo));
+
         yield break;
     }
     private void ShowCharacter(int index)
     {
-        TMP_TextInfo txtInfo = this.textMeshPro.textInfo;
+        TMP_TextInfo txtInfo = this.mainText.textInfo;
         TMP_CharacterInfo[] charInfo = txtInfo.characterInfo;
         int materialReferenceIndex = charInfo[index].materialReferenceIndex;
         int vertexIndex = charInfo[index].vertexIndex;
-        bool isMove = true;
         if (this._txtData.WaveList.Contains(index))
         {
             this._waveList.Add(index);
-            isMove = false;
         }
         if (this._txtData.ShakeList.Contains(index))
         {
             this._shakeList.Add(index);
-            isMove = false;
         }
         if (this._txtData.ErrorList.Contains(index))
         {
@@ -140,13 +155,45 @@ public class RichText : MonoBehaviour
         {
             this._flickerList.Add(index);
         }
+        StartCoroutine(FadeCharacter(materialReferenceIndex, vertexIndex, txtInfo));
     }
-    
+
+
+    private IEnumerator FadeCharacter(int matIndex, int vertIndex, TMP_TextInfo charInfo)
+    {
+        float durationTime = delayBettweenLetter;
+        float countTime = 0f;
+
+        while (true)
+        {
+            Color32[] newVertexColors = charInfo.meshInfo[matIndex].colors32;
+            float num = Mathf.Clamp(countTime / durationTime, 0f, 1f);
+            for (int i = 0; i < 4; i++)
+            {
+                byte lerpAlpha = (byte)Mathf.Lerp(0f, 255f, num);
+                newVertexColors[vertIndex+i].a = lerpAlpha;
+            }
+            if (num >= 1)
+            {
+                break;
+            }
+            countTime += Time.deltaTime;
+            for (int i = 0; i < charInfo.meshInfo.Length; i++)
+            {
+                var meshInfo = charInfo.meshInfo[i];
+                meshInfo.mesh.vertices = meshInfo.vertices;
+                mainText.UpdateVertexData(TMP_VertexDataUpdateFlags.Colors32);
+                yield return meshInfo;
+            }
+        }
+
+        yield break;
+    }
+
     private IEnumerator Wave(TMP_TextInfo txtData)
     {
         while (true)
         {
-            //for (int ch = 0; ch < txtData.characterCount; ch++)
             foreach(int ch in this._waveList)
             {
                 var charInfo = txtData.characterInfo[ch];
@@ -161,7 +208,7 @@ public class RichText : MonoBehaviour
                 for (int j = 0; j < 4; j++)
                 {
                     var orig = verts[charInfo.vertexIndex + j];
-                    verts[charInfo.vertexIndex + j] = orig + new Vector3(0, a1 * Mathf.Sin((Time.time*2f + orig.x*0.01f)*a2), 0);
+                    verts[charInfo.vertexIndex + j] = orig + new Vector3(0, amplWave/10 * Mathf.Sin((Time.time*2f + orig.x*0.01f)*periodWave), 0);
                 }
             }
             for (int i = 0; i < txtData.meshInfo.Length; i++)
@@ -175,15 +222,13 @@ public class RichText : MonoBehaviour
         }
         yield break;
     }
-    public float a1 = 1;
-    public float a2 = 1;
+
     private IEnumerator Shake(TMP_TextInfo txtData)
     {
         while (true)
         {
 
-            WaitForSeconds shakeDelay = new WaitForSeconds(shakeTime);
-            //for (int ch = 0; ch < txtData.characterCount; ch++)
+            WaitForSeconds shakeDelay = new WaitForSeconds(shakeTime/10);
             foreach (int ch in this._shakeList)
             {
                 Vector3 a = new Vector3(UnityEngine.Random.Range(-0.25f, 0.25f), UnityEngine.Random.Range(-0.25f, 0.25f), 0f);

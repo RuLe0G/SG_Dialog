@@ -492,14 +492,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mainText: {fileID: 1925388539}
   inputText: {fileID: 1938144722}
-  sentence: 
-  delayBettweenLetter: 0.01
-  textMeshPro: {fileID: 1925388539}
+  delayBettweenLetter: 0.05
   clip: {fileID: 8300000, guid: 8fab4e6cc64b4194da268f21e3064669, type: 3}
-  shakeTime: 0.05
+  shakeTime: 0.3
   shakeScale: 10
-  a1: 0.1
-  a2: 10
+  amplWave: 0.4
+  periodWave: 5
 --- !u!82 &420377281
 AudioSource:
   m_ObjectHideFlags: 0

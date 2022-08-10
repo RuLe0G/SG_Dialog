@@ -88,37 +88,34 @@ namespace SD.Text
                     }
                     int num4 = num3 - num2 + 1;
                     string subText = this.text.Substring(num2 + 1, num4 - 2).ToLower();
-                    if (subText == "s")
+                    switch (subText)
                     {
-                        Shakeflag = true;
-                    }
-                    else if (subText == "w")
-                    {
-                        Waveflag2 = true;
-                    }
-                    else if (subText == "e")
-                    {
-                        Errorflag3 = true;
-                    }
-                    else if (subText == "f")
-                    {
-                        Flickerflag4 = true;
-                    }
-                    else if (subText == "/s")
-                    {
-                        Shakeflag = false;
-                    }
-                    else if (subText == "/w")
-                    {
-                        Waveflag2 = false;
-                    }
-                    else if (subText == "/e")
-                    {
-                        Errorflag3 = false;
-                    }
-                    else if (subText == "/f")
-                    {
-                        Flickerflag4 = false;
+                        case "s":
+                            Shakeflag = true;
+                            break;
+                        case "/s":
+                            Shakeflag = false;
+                            break;
+                        case "w":
+                            Waveflag2 = true;
+                            break;
+                        case "/w":
+                            Waveflag2 = false;
+                            break;
+                        case "e":
+                            Errorflag3 = true;
+                            break;
+                        case "/e":
+                            Errorflag3 = false;
+                            break;
+                        case "f":
+                            Flickerflag4 = true;
+                            break;
+                        case "/f":
+                            Flickerflag4 = false;
+                            break;
+                        default:
+                            break;
                     }
                     text = text.Remove(num2, num4);
                 }
