@@ -4,7 +4,7 @@ using UnityEngine;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace SD.Text
+namespace SD.DialogText
 {
     public class TextData
     {
@@ -63,10 +63,6 @@ namespace SD.Text
                 return this._flickerList;
             }
         }
-
-        //
-        //
-        //
 
         public void ParseScript()
         {

@@ -1,0 +1,14 @@
+<dialogue>
+	<node>
+		<nodeText>text [s]text[/s] [w]text[/w]</nodeText>
+	</node>
+	<node>
+		<nodeText>текст [s]текст[/s] [w]текст[/w]</nodeText>
+	</node>
+	<node>
+		<nodeText>АБОБА</nodeText>
+	</node>
+	<node>
+		<nodeText>[w]А[s]Б[/s]О[s]Б[/s]А[/w]</nodeText>
+	</node>
+</dialogue>
