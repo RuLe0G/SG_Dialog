@@ -20,6 +20,10 @@ namespace SD.DialogText
         [SerializeField]
         private TMP_Text mainText;
 
+        [SerializeField]
+        private TMP_Text nameText;
+
+
         public bool ShowDialogue;
 
         public TextData _txtData;
@@ -35,18 +39,36 @@ namespace SD.DialogText
         {
             if (currentNode < dialog.nodes.Length)
             {
-                ShowDialogue = true;
-                RichText.initDlg(mainText, buildText());
+                StartDialog();
+                if (dialog.nodes[currentNode].end == 1)
+                {
+                    StopDialog();
+                    currentNode++;
+                    return;
+                }
                 currentNode++;
             }
             else
             {
-                mainText.text = "";
-                ShowDialogue = false;
-                RichText.gameObject.SetActive(false);
+                StopDialog();
+                
             }
         }
 
+        private void StartDialog()
+        {
+            RichText.gameObject.SetActive(true);
+            ShowDialogue = true;
+            RichText.initDlg(mainText, buildText());
+            nameText.text = dialog.nodes[currentNode].nameText;
+        }
+
+        private void StopDialog()
+        {
+            mainText.text = "";
+            ShowDialogue = false;
+            RichText.gameObject.SetActive(false);
+        }
 
         private TextData buildText()
         {

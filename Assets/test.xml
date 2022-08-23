@@ -1,14 +1,37 @@
 <dialogue>
 	<node>
-		<nodeText>text [s]text[/s] [w]text[/w]</nodeText>
+		<nameText>Олег</nameText>
+		<nodeText>Привет, ты кто?</nodeText>
 	</node>
 	<node>
-		<nodeText>текст [s]текст[/s] [w]текст[/w]</nodeText>
+		<nameText>Некто</nameText>
+		<nodeText>Я АБОБА.</nodeText>
 	</node>
 	<node>
-		<nodeText>АБОБА</nodeText>
+		<nameText>Олег</nameText>
+		<nodeText>[w]АБОБА?[/w]</nodeText>
 	</node>
 	<node>
-		<nodeText>[w]А[s]Б[/s]О[s]Б[/s]А[/w]</nodeText>
+		<nameText>Абоба</nameText>
+		<nodeText>Зови меня Джон Абоб.</nodeText>
+	</node>
+	<node>
+		<dialend>1</dialend>
+	</node>
+	<node>
+		<nameText>Джон Абоб</nameText>
+		<nodeText>А ты значит [w]тот самый[/w] Олег. Ну-ка, крикни!</nodeText>
+	</node>
+	<node>
+		<nameText>Олег</nameText>
+		<nodeText>[w]Аааа[/w]</nodeText>
+	</node>
+	<node>
+		<nameText>Джон Абоб</nameText>
+		<nodeText>Ты можешь лучше.</nodeText>
+	</node>
+	<node>
+		<nameText>Олег</nameText>
+		<nodeText>[s]ААААААААААААААА!!![/s]</nodeText>		
 	</node>
 </dialogue>

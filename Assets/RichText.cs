@@ -81,6 +81,7 @@ namespace SD.DialogText
 
         public void SetText()
         {
+            ClearMainText();
             this._mainText.text = this._txtData.text;                
             this._mainText.ForceMeshUpdate();
             SetTextColor();

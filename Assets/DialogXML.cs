@@ -25,9 +25,10 @@ namespace SD.DialogText
     public class Node
     {
         [XmlElement("nodeText")]
-        public string nodeText;
-
+        public string nodeText = "";
+        [XmlElement("nameText")]
+        public string nameText = "";
         [XmlElement("dialend")]
-        public int end;
+        public byte end =0;
     }
 }
